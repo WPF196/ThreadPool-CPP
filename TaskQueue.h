@@ -7,34 +7,36 @@ using namespace std;
 using callback = void(*)(void*);	// 函数指针
 
 // 任务结构体
-struct Task {
-	Task() {
+template <typename T>
+struct Task{
+	Task<T>() {
 		this->function = nullptr;
 		this->arg = nullptr;
 	}
-	Task(callback f, void* arg) {
+	Task<T>(callback f, void* arg) {
 		this->function = f;
-		this->arg = arg;
+		this->arg = (T*)arg;
 	}
 	callback function;	// 函数指针
-	void* arg;			// 参数指针
+	T* arg;			// 参数指针
 };
 
 // 任务队列
+template <typename T>
 class TaskQueue {
 public:
 	TaskQueue();
 	~TaskQueue();
 
 	// 添加任务
-	void addTask(Task task);
+	void addTask(Task<T> task);
 	void addTask(callback f, void* arg);
 	// 取出任务
-	Task getTask();
+	Task<T> getTask();
 	// 获取队列任务数
-	inline int getSize();
+	size_t getSize(); 
 
 private:
 	pthread_mutex_t m_mutex;	// 互斥锁
-	queue<Task> m_queue;		// 任务队列
+	queue<Task<T>> m_queue;		// 任务队列
 };
